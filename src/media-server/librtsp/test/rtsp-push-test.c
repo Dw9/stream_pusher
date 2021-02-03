@@ -16,7 +16,12 @@ int rtsp_addr_is_multicast(const char* ip);
 
 
 
-static const char* sdp = 
+char sdp[2048] = {0};
+const char* url;
+const char* session;
+
+
+static const char* sdp_format = 
 "v=0\n"
 "o=- 0 0 IN IP4 127.0.0.1\n"
 "c=IN IP4 192.168.3.12\n"
@@ -25,10 +30,15 @@ static const char* sdp =
 "a=tool:libavformat 58.45.100\n"
 "m=audio 0 RTP/AVP 96\n"
 "b=AS:352\n"
-"a=rtpmap:96 L16/8000/1\n"
+"a=rtpmap:96 L16/%d/%d\n"
 "a=control:streamid=0\n";
-const char* url;
-const char* session;
+
+
+void productSdp(int sample,int channel){
+
+	snprintf(sdp, sizeof(sdp), sdp_format, sample, channel);
+	printf("sdp: %s\n",sdp);
+}
 
 
 struct rtsp_client_test_t
@@ -164,7 +174,7 @@ static int onannounce(void* param){
 	return 0;
 }
 
-void rtsp_push_test(const char* host, const char* file,const char* filename,int sample,int channel)
+void rtsp_push_test(const char* host, const char* file,void* demuxFIFO,int sample,int channel)
 {
 	int r;
 	struct rtsp_client_test_t ctx;
@@ -181,7 +191,8 @@ void rtsp_push_test(const char* host, const char* file,const char* filename,int 
 	push_handler.onrtp = onrtp;
 	
 
-	ctx.transport = RTSP_TRANSPORT_RTP_UDP; // RTSP_TRANSPORT_RTP_TCP
+	//ctx.transport = RTSP_TRANSPORT_RTP_UDP; // RTSP_TRANSPORT_RTP_TCP
+	ctx.transport = RTSP_TRANSPORT_RTP_TCP;
 	snprintf(packet, sizeof(packet), "rtsp://%s/%s", host, file); // url
 	url = strdup(packet);
 	printf("url:%s\n",url);
@@ -193,12 +204,13 @@ void rtsp_push_test(const char* host, const char* file,const char* filename,int 
 	assert(ctx.rtsp);
 
 	//option
-	assert(0 == rtsp_push_options(ctx.rtsp,url));
 	socket_setnonblock(ctx.socket, 0);
+	assert(0 == rtsp_push_options(ctx.rtsp,url));
 	r = socket_recv(ctx.socket, packet, sizeof(packet), 0);
 	assert(0 == rtsp_push_input(ctx.rtsp, packet, r));
 
 	//announce
+	productSdp(sample, channel);
 	assert( 0 == rtsp_push_announce(ctx.rtsp,sdp));
 	r = socket_recv(ctx.socket, packet, sizeof(packet), 0);
 	assert(0 == rtsp_push_input(ctx.rtsp, packet, r));
@@ -216,10 +228,9 @@ void rtsp_push_test(const char* host, const char* file,const char* filename,int 
 	// assert(0 == rtsp_push_input(ctx.rtsp, packet, r));
 	usleep(1000*10);
 	//send rtp packet
-	rtsp_push_sendrtp(ctx.rtsp,filename,sample,channel);
+	rtsp_push_sendrtp(ctx.rtsp,demuxFIFO,sample,channel);
 	
-
-	rtsp_client_destroy(ctx.rtsp);
+	rtsp_push_destroy(ctx.rtsp);
 	socket_close(ctx.socket);
 	socket_cleanup();
 }
