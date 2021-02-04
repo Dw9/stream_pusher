@@ -19,7 +19,7 @@ struct rtsp_rtp_info_t
 	uint32_t time;	// uint32_t
 };
 
-struct rtsp_client_handler_t
+struct rtsp_push_handler_t
 {
 	///network implementation
 	///@return >0-sent bytes, <0-error
@@ -33,10 +33,10 @@ struct rtsp_client_handler_t
     /// @return <0-error, other-RTSP_TRANSPORT_XXX
 	int (*rtpport)(void* param, int media, const char* source, unsigned short port[2], char* ip, int len);
 
-	/// rtsp_client_announce callback only
+	/// rtsp_push_announce callback only
 	int (*onannounce)(void* param);
 
-	/// call rtsp_client_setup
+	/// call rtsp_push_setup
 	int (*ondescribe)(void* param, const char* sdp);
 
 	/// @param[in] duration -1-unknown or live stream, other-rtsp stream duration in MS
@@ -52,7 +52,7 @@ struct rtsp_client_handler_t
 /// @param[in] param user-defined parameter
 /// @param[in] usr RTSP auth username(optional)
 /// @param[in] pwd RTSP auth password(optional)
-rtsp_push_t* rtsp_push_create(const char* uri, const char* usr, const char* pwd, const struct rtsp_client_handler_t *handler, void* param);
+rtsp_push_t* rtsp_push_create(const char* uri, const char* usr, const char* pwd, const struct rtsp_push_handler_t *handler, void* param);
 
 void rtsp_push_destroy(rtsp_push_t* rtsp);
 
@@ -64,7 +64,7 @@ int rtsp_push_input(rtsp_push_t* rtsp, const void* data, size_t bytes);
 /// find RTSP response header
 /// @param[in] name header name
 /// @return header value, NULL if not found.
-/// NOTICE: call in rtsp_client_handler_t callback only
+/// NOTICE: call in rtsp_push_handler_t callback only
 const char* rtsp_push_get_header(rtsp_push_t* rtsp, const char* name);
 
 /// rtsp options (optional)
@@ -107,4 +107,4 @@ int rtsp_push_get_media_rate(rtsp_push_t* rtsp, int media); // return 0 if unkno
 #if defined(__cplusplus)
 }
 #endif
-#endif /* !_rtsp_client_h_ */
+#endif /* !_rtsp_push_h_ */

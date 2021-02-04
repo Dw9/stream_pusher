@@ -40,7 +40,7 @@ enum rtsp_state_t
 
 struct rtsp_push_t
 {
-	struct rtsp_client_handler_t handler;
+	struct rtsp_push_handler_t handler;
 	void* param;
 
     const char* announce; // announce sdp

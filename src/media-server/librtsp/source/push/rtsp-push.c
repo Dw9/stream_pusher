@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-struct rtsp_push_t* rtsp_push_create(const char* uri, const char* usr, const char* pwd, const struct rtsp_client_handler_t *handler, void* param)
+struct rtsp_push_t* rtsp_push_create(const char* uri, const char* usr, const char* pwd, const struct rtsp_push_handler_t *handler, void* param)
 {
 	struct rtsp_push_t *rtsp;
 	rtsp = (struct rtsp_push_t*)calloc(1, sizeof(*rtsp));
