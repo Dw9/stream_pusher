@@ -26,6 +26,7 @@ void checkDevice(){
 
     snprintf(device,sizeof(device),device_format,device_num[0],device_num[1]);
     std::cout<<device<<endl;
+    fclose(fp);
 
 
 }
