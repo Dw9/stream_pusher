@@ -18,8 +18,7 @@ set(CHIP intel CACHE STRING "this is default chip type" )
 
 
 message("-- TARGET_ARCH: ${TARGET_ARCH}")
-message("-- CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
-
+message("-- CMAKE_TOOLCHAIN_FILE: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # 包含引用目录，源文件可以直接用 #include "repo_version.h" 包含
 include_directories(${PROJECT_BINARY_DIR})
@@ -31,8 +30,8 @@ set(SDK_Root ${CMAKE_CURRENT_SOURCE_DIR}/src/sdk)
 set(AVCODEC_Root ${CMAKE_CURRENT_SOURCE_DIR}/src/avcodec)
 
 
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/${TARGET_ARCH}/include)
-# link_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/${TARGET_ARCH}/lib)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdpart/${TARGET_ARCH}/include)
+# link_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdpart/${TARGET_ARCH}/lib)
 
 INCLUDE_DIRECTORIES(${AVCODEC_Root}/avbsf/include)
 

@@ -39,11 +39,47 @@ aux_source_directory(${MediaServer_Root}/libmpeg/source src_mpeg)
 aux_source_directory(${AVCODEC_Root}/avbsf/src src_avbsf)
 
 
-ADD_EXECUTABLE(read_dec_tran  01_read_push.cpp 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdpart/faac/include)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdpart/faac/libs)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdpart/asound/include)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdpart/asound/libs)
+
+# ADD_EXECUTABLE(01_read_push  01_read_push.cpp 
+#         ${SDK_SOURCE_DIR}/port/ip-route.c
+#         ${SDK_SOURCE_DIR}/port/aio-socket-epoll.c
+#         ${src_rtsp_sdp}
+#         ${src_aio} ${src_http} ${src_sdk} ${src_digest} ${src_avbsf} ${src_rtsp_server}
+#         ${src_rtsp_utils} ${src_rtp} ${src_mpeg} ${src_flv} ${src_rtsp} ${src_mov} ${src_rtsp_test})
+# TARGET_LINK_LIBRARIES(01_read_push pthread)
+
+
+
+ADD_EXECUTABLE(02_cap_save  02_cap_save.cpp 
         ${SDK_SOURCE_DIR}/port/ip-route.c
         ${SDK_SOURCE_DIR}/port/aio-socket-epoll.c
         ${src_rtsp_sdp}
         ${src_aio} ${src_http} ${src_sdk} ${src_digest} ${src_avbsf} ${src_rtsp_server}
         ${src_rtsp_utils} ${src_rtp} ${src_mpeg} ${src_flv} ${src_rtsp} ${src_mov}
     ${src_base} ${src_rtsp_test})
-TARGET_LINK_LIBRARIES(read_dec_tran pthread)
+TARGET_LINK_LIBRARIES(02_cap_save pthread faac asound)
+
+ADD_EXECUTABLE(03_cap_push  03_cap_push.cpp 
+        ${SDK_SOURCE_DIR}/port/ip-route.c
+        ${SDK_SOURCE_DIR}/port/aio-socket-epoll.c
+        ${src_rtsp_sdp}
+        ${src_aio} ${src_http} ${src_sdk} ${src_digest} ${src_avbsf} ${src_rtsp_server}
+        ${src_rtsp_utils} ${src_rtp} ${src_mpeg} ${src_flv} ${src_rtsp} ${src_mov}
+    ${src_base} ${src_rtsp_test})
+TARGET_LINK_LIBRARIES(03_cap_push pthread faac asound)
+
+
+ADD_EXECUTABLE(04_cap_push_save  04_cap_push_save.cpp 
+        ${SDK_SOURCE_DIR}/port/ip-route.c
+        ${SDK_SOURCE_DIR}/port/aio-socket-epoll.c
+        ${src_rtsp_sdp}
+        ${src_aio} ${src_http} ${src_sdk} ${src_digest} ${src_avbsf} ${src_rtsp_server}
+        ${src_rtsp_utils} ${src_rtp} ${src_mpeg} ${src_flv} ${src_rtsp} ${src_mov}
+    ${src_base} ${src_rtsp_test})
+TARGET_LINK_LIBRARIES(04_cap_push_save pthread faac asound)
+
